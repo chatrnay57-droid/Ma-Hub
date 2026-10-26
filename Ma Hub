@@ -1,0 +1,89 @@
+-- fa. Hub - Custom Script สำหรับใส่ใน LocalScript (StarterGui)
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- สร้าง UI หลัก (ScreenGui)
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "FaHubGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- หน้าต่างหลัก (Main Frame)
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 220, 0, 240)
+mainFrame.Position = UDim2.new(0.05, 0, 0.3, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = mainFrame
+
+-- หัวข้อ (Title)
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "fa. Hub"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 18
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Parent = mainFrame
+
+-- ฟังก์ชันสร้างปุ่ม
+local function createButton(name, positionY, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.85, 0, 0, 40)
+    btn.Position = UDim2.new(0.075, 0, 0, positionY)
+    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 14
+    btn.Font = Enum.Font.GothamMedium
+    btn.Text = name
+    btn.Parent = mainFrame
+    
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.Parent = btn
+    
+    btn.MouseButton1Click:Connect(callback)
+end
+
+-- 1. ฟังก์ชันเทเลพอร์ตไปบ้านตนเอง
+createButton("เทเลพอร์ตไปบ้านตนเอง", 50, function()
+    local character = player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local myHousePosition = Vector3.new(0, 5, 0) 
+        character.HumanoidRootPart.CFrame = CFrame.new(myHousePosition)
+    end
+end)
+
+-- 2. ฟังก์ชันเทเลพอร์ตไปจุดศูนย์กลางแมพ
+createButton("เทเลพอร์ตไปจุดศูนย์กลาง", 100, function()
+    local character = player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local centerPosition = Vector3.new(0, 10, 0)
+        character.HumanoidRootPart.CFrame = CFrame.new(centerPosition)
+    end
+end)
+
+-- 3. ฟังก์ชันแสดงร้านค้าในแมพ
+createButton("แสดงร้านค้าในแมพ", 150, function()
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("Model") and (obj.Name:lower():find("shop") or obj.Name:lower():find("store")) then
+            if not obj:FindFirstChild("ShopHighlight") then
+                local highlight = Instance.new("Highlight")
+                highlight.Name = "ShopHighlight"
+                highlight.Adornee = obj
+                highlight.FillColor = Color3.fromRGB(0, 255, 0)
+                highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+                highlight.Parent = obj
+            end
+        end
+    end
+end)
